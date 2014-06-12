@@ -27,16 +27,16 @@ namespace QuickNavigatePlugin.Controls
             RefreshTree();
         }
 
-        virtual protected void InitTree()
-        {
-        }
-
         protected void RefreshTree()
         {
             tree.BeginUpdate();
             tree.Nodes.Clear();
             FillTree();
             tree.EndUpdate();
+        }
+        
+        virtual protected void InitTree()
+        {
         }
 
         virtual protected void FillTree()
@@ -61,10 +61,6 @@ namespace QuickNavigatePlugin.Controls
                     Navigate();
                     break;
             }
-        }
-
-        virtual protected void Form_FormClosing(object sender, FormClosingEventArgs e)
-        {
         }
 
         protected void Input_TextChanged(object sender, EventArgs e)
@@ -133,6 +129,10 @@ namespace QuickNavigatePlugin.Controls
                 e.Graphics.FillRectangle(defaultNodeBrush, e.Bounds);
                 e.Graphics.DrawString(e.Node.Text, tree.Font, Brushes.Black, e.Bounds.Left, e.Bounds.Top, StringFormat.GenericDefault);
             }
+        }
+
+        virtual protected void Form_FormClosing(object sender, FormClosingEventArgs e)
+        {
         }
 
         #endregion
