@@ -52,8 +52,8 @@
             this.input.Name = "input";
             this.input.Size = new System.Drawing.Size(365, 20);
             this.input.TabIndex = 1;
-            this.input.TextChanged += new System.EventHandler(this.Input_TextChanged);
-            this.input.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Input_KeyDown);
+            this.input.TextChanged += Input_TextChanged;
+            this.input.KeyDown += Input_KeyDown;
             // 
             // listBox
             // 
@@ -93,8 +93,8 @@
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Open Type";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OpenTypeForm_FormClosing);
-            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.OpenTypeForm_KeyDown);
+            this.FormClosing += Form_FormClosing;
+            this.KeyDown += Form_KeyDown;
             this.ResumeLayout(false);
             this.PerformLayout();
         }
