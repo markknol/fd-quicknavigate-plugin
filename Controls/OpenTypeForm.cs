@@ -2,7 +2,6 @@
 using ASCompletion.Context;
 using ASCompletion.Model;
 using PluginCore;
-using PluginCore.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -29,9 +28,9 @@ namespace QuickNavigatePlugin
             if (settings.TypeFormSize.Width > MinimumSize.Width) Size = settings.TypeFormSize;
             (PluginBase.MainForm as FlashDevelop.MainForm).ThemeControls(this);
             CreateItemsList();
-            RefreshListBox();
+            RefreshTree();
             selectedNodeBrush = new SolidBrush(SystemColors.ControlDarkDark);
-            defaultNodeBrush = new SolidBrush(listBox.BackColor);
+            defaultNodeBrush = new SolidBrush(tree.BackColor);
         }
 
         private void CreateItemsList()
@@ -41,35 +40,7 @@ namespace QuickNavigatePlugin
             dictionary.Clear();
             IASContext context = ASContext.GetLanguageContext(PluginBase.CurrentProject.Language);
             if (context == null) return;
-            foreach (PathModel path in context.Classpath)
-            {
-                path.ForeachFile(FileModelDelegate);
-            }
-        }
-
-        private void RefreshListBox()
-        {
-            listBox.BeginUpdate();
-            listBox.Items.Clear();
-            FillListBox();
-            if (listBox.Items.Count > 0) listBox.SelectedIndex = 0;
-            listBox.EndUpdate();
-        }
-
-        private void FillListBox()
-        {
-            List<string> matchedItems;
-            string searchText = input.Text.Trim();
-            if (string.IsNullOrEmpty(searchText)) matchedItems = openedTypes;
-            else
-            {
-                bool wholeWord = settings.TypeFormWholeWord;
-                bool matchCase = settings.TypeFormMatchCase;
-                matchedItems = SearchUtil.GetMatchedItems(openedTypes, searchText, ".", 0, wholeWord, matchCase);
-                if (matchedItems.Capacity > 0) matchedItems.Add(ITEM_SPACER);
-                matchedItems.AddRange(SearchUtil.GetMatchedItems(projectTypes, searchText, ".", MAX_ITEMS, wholeWord, matchCase));
-            }
-            listBox.Items.AddRange(matchedItems.ToArray());
+            foreach (PathModel path in context.Classpath) path.ForeachFile(FileModelDelegate);
         }
 
         private bool FileModelDelegate(FileModel model)
@@ -85,10 +56,35 @@ namespace QuickNavigatePlugin
             return true;
         }
 
+        private void RefreshTree()
+        {
+            tree.BeginUpdate();
+            tree.Nodes.Clear();
+            FillTree();
+            tree.EndUpdate();
+        }
+
+        private void FillTree()
+        {
+            List<string> matchedItems;
+            string searchText = input.Text.Trim();
+            if (string.IsNullOrEmpty(searchText)) matchedItems = openedTypes;
+            else
+            {
+                bool wholeWord = settings.TypeFormWholeWord;
+                bool matchCase = settings.TypeFormMatchCase;
+                matchedItems = SearchUtil.GetMatchedItems(openedTypes, searchText, ".", 0, wholeWord, matchCase);
+                if (matchedItems.Capacity > 0) matchedItems.Add(ITEM_SPACER);
+                matchedItems.AddRange(SearchUtil.GetMatchedItems(projectTypes, searchText, ".", MAX_ITEMS, wholeWord, matchCase));
+            }
+            foreach (string text in matchedItems) tree.Nodes.Add(new TreeNode(text));
+            if (tree.Nodes.Count > 0) tree.SelectedNode = tree.Nodes[0];
+        }
+
         private void Navigate()
         {
-            if (listBox.SelectedItem == null) return;
-            string selectedItem = listBox.SelectedItem.ToString();
+            if (tree.SelectedNode == null) return;
+            string selectedItem = tree.SelectedNode.Text;
             if (selectedItem == ITEM_SPACER) return;
             ClassModel classModel = dictionary[selectedItem];
             FileModel model = ModelsExplorer.Instance.OpenFile(classModel.InFile.FileName);
@@ -122,85 +118,77 @@ namespace QuickNavigatePlugin
             }
         }
 
+        private void OpenTypeForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            settings.TypeFormSize = Size;
+        }
+
+        private void Input_TextChanged(object sender, EventArgs e)
+        {
+            RefreshTree();
+        }
+
         private void Input_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Control || e.Shift || listBox.Items.Count == 0) return;
-            int selectedIndex = listBox.SelectedIndex;
-            int count = listBox.Items.Count - 1;
-            int visibleCount = listBox.Height / listBox.ItemHeight - 1;
+            if (e.Control || e.Shift || tree.SelectedNode == null) return;
+            TreeNode node;
+            int visibleCount = tree.VisibleCount - 1;
             switch (e.KeyCode)
             {
                 case Keys.Down:
-                    if (selectedIndex < count) listBox.SelectedIndex++;
+                    if (tree.SelectedNode.NextVisibleNode != null) tree.SelectedNode = tree.SelectedNode.NextVisibleNode;
                     break;
                 case Keys.Up:
-                    if (selectedIndex > 0) listBox.SelectedIndex--;
+                    if (tree.SelectedNode.PrevVisibleNode != null) tree.SelectedNode = tree.SelectedNode.PrevVisibleNode;
                     break;
                 case Keys.Home:
-                    listBox.SelectedIndex = 0;
+                    tree.SelectedNode = tree.Nodes[0];
                     break;
                 case Keys.End:
-                    listBox.SelectedIndex = count;
+                    node = tree.SelectedNode;
+                    while (node.NextVisibleNode != null) node = node.NextVisibleNode;
+                    tree.SelectedNode = node;
                     break;
                 case Keys.PageUp:
-                    selectedIndex = selectedIndex - visibleCount;
-                    if (selectedIndex < 0) selectedIndex = 0;
-                    listBox.SelectedIndex = selectedIndex;
+                    node = tree.SelectedNode;
+                    for (int i = 0; i < visibleCount; i++)
+                    {
+                        if (node.PrevVisibleNode == null) break;
+                        node = node.PrevVisibleNode;
+                    }
+                    tree.SelectedNode = node;
                     break;
                 case Keys.PageDown:
-                    selectedIndex = selectedIndex + visibleCount;
-                    if (selectedIndex > count) selectedIndex = count;
-                    listBox.SelectedIndex = selectedIndex;
+                    node = tree.SelectedNode;
+                    for (int i = 0; i < visibleCount; i++)
+                    {
+                        if (node.NextVisibleNode == null) break;
+                        node = node.NextVisibleNode;
+                    }
+                    tree.SelectedNode = node;
                     break;
                 default: return;
             }
             e.Handled = true;
         }
 
-        private void Input_TextChanged(object sender, EventArgs e)
-        {
-            RefreshListBox();
-        }
-
-        private void ListBox_DoubleClick(object sender, EventArgs e)
+        private void Tree_NodeMouseDoubleClick(object sender, EventArgs e)
         {
             Navigate();
         }
 
-        private void ListBox_DrawItem(object sender, DrawItemEventArgs e)
+        private void Tree_DrawNode(object sender, System.Windows.Forms.DrawTreeNodeEventArgs e)
         {
-            bool selected = (e.State & DrawItemState.Selected) == DrawItemState.Selected;
-            if (selected) e.Graphics.FillRectangle(selectedNodeBrush, e.Bounds);
-            else e.Graphics.FillRectangle(defaultNodeBrush, e.Bounds);
-            if (e.Index >= 0)
+            if ((e.State & TreeNodeStates.Selected) > 0)
             {
-                string fullName = (string)listBox.Items[e.Index];
-                int slashIndex = fullName.LastIndexOf('.');
-                string path = fullName.Substring(0, slashIndex + 1);
-                string name = fullName.Substring(slashIndex + 1);
-                int pathSize = DrawHelper.MeasureDisplayStringWidth(e.Graphics, path, e.Font) - 2;
-                if (pathSize < 0) pathSize = 0; // No negative padding...
-                if (selected)
-                {
-                    e.Graphics.DrawString(path, e.Font, Brushes.LightGray, e.Bounds.Left, e.Bounds.Top, StringFormat.GenericDefault);
-                    e.Graphics.DrawString(name, e.Font, Brushes.White, e.Bounds.Left + pathSize, e.Bounds.Top, StringFormat.GenericDefault);
-                }
-                else
-                {
-                    e.Graphics.DrawString(path, e.Font, Brushes.Gray, e.Bounds.Left, e.Bounds.Top, StringFormat.GenericDefault);
-                    e.Graphics.DrawString(name, e.Font, Brushes.Black, e.Bounds.Left + pathSize, e.Bounds.Top, StringFormat.GenericDefault);
-                }
+                e.Graphics.FillRectangle(selectedNodeBrush, e.Bounds);
+                e.Graphics.DrawString(e.Node.Text, tree.Font, Brushes.White, e.Bounds.Left, e.Bounds.Top, StringFormat.GenericDefault);
             }
-        }
-
-        private void ListBox_Resize(object sender, EventArgs e)
-        {
-            listBox.Refresh();
-        }
-
-        private void OpenTypeForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            settings.TypeFormSize = Size;
+            else
+            {
+                e.Graphics.FillRectangle(defaultNodeBrush, e.Bounds);
+                e.Graphics.DrawString(e.Node.Text, tree.Font, Brushes.Black, e.Bounds.Left, e.Bounds.Top, StringFormat.GenericDefault);
+            }
         }
 
         #endregion
