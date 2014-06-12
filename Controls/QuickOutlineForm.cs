@@ -70,15 +70,6 @@ namespace QuickNavigatePlugin
             tree.ImageList = treeIcons;
         }
 
-        private void Navigate()
-        {
-            if (tree.SelectedNode != null)
-            {
-                ASContext.Context.OnSelectOutlineNode(tree.SelectedNode);
-                Close();
-            }
-        }
-
         private void RefreshTree()
         {
             tree.BeginUpdate();
@@ -122,6 +113,13 @@ namespace QuickNavigatePlugin
                 nodes.Add(node);
                 if (tree.SelectedNode == null) tree.SelectedNode = node;
             }
+        }
+
+        private void Navigate()
+        {
+            if (tree.SelectedNode != null) return;
+            ASContext.Context.OnSelectOutlineNode(tree.SelectedNode);
+            Close();
         }
 
         #region Event Handlers
