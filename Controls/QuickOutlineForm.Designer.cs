@@ -42,8 +42,8 @@
             this.input.Name = "input";
             this.input.Size = new System.Drawing.Size(305, 20);
             this.input.TabIndex = 0;
-            this.input.TextChanged += new System.EventHandler(this.Input_TextChanged);
-            this.input.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Input_KeyDown);
+            this.input.TextChanged += Input_TextChanged;
+            this.input.KeyDown += Input_KeyDown;
             // 
             // tree
             // 
@@ -63,7 +63,7 @@
             this.tree.ShowRootLines = false;
             this.tree.Size = new System.Drawing.Size(305, 173);
             this.tree.TabIndex = 1;
-            this.tree.NodeMouseDoubleClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.Tree_NodeMouseDoubleClick);
+            this.tree.NodeMouseDoubleClick += Tree_NodeMouseDoubleClick;
             this.tree.DrawNode += Tree_DrawNode;
             // 
             // QuickOutlineForm
@@ -83,11 +83,10 @@
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Quick Outline";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.QuickOutlineForm_FormClosing);
-            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.QuickOutlineForm_KeyDown);
+            this.FormClosing += Form_FormClosing;
+            this.KeyDown += Form_KeyDown;
             this.ResumeLayout(false);
             this.PerformLayout();
-
         }
 
         #endregion

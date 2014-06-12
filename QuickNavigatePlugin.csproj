@@ -67,6 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ControlClickManager.cs" />
+    <Compile Include="Controls\BaseForm.cs" />
     <Compile Include="Controls\OpenResourceForm.cs">
       <SubType>Form</SubType>
     </Compile>
