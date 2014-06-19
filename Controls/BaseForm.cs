@@ -7,13 +7,16 @@ namespace QuickNavigatePlugin.Controls
 {
     public class BaseForm : Form
     {
+        protected const int MAX_ITEMS = 100;
+        protected const string ITEM_SPACER = "-----------------";
         public readonly Settings settings;
-        public Brush selectedNodeBrush { get; private set; }
-        public Brush defaultNodeBrush { get; private set; }
+        public Brush SelectedNodeBrush { get; private set; }
+        public Brush DefaultNodeBrush { get; private set; }
         private TreeView tree;
 
         public BaseForm(Settings settings)
         {
+            Font = PluginBase.Settings.ConsoleFont;
             this.settings = settings;
         }
 
@@ -21,9 +24,9 @@ namespace QuickNavigatePlugin.Controls
         {
             (PluginBase.MainForm as FlashDevelop.MainForm).ThemeControls(this);
             this.tree = tree;
-            selectedNodeBrush = new SolidBrush(SystemColors.ControlDarkDark);
-            defaultNodeBrush = new SolidBrush(tree.BackColor);
-            InitTree();
+            SelectedNodeBrush = new SolidBrush(SystemColors.ControlDarkDark);
+            DefaultNodeBrush = new SolidBrush(tree.BackColor);
+            InitBasics();
             RefreshTree();
         }
 
@@ -35,7 +38,7 @@ namespace QuickNavigatePlugin.Controls
             tree.EndUpdate();
         }
         
-        virtual protected void InitTree()
+        virtual protected void InitBasics()
         {
         }
 
@@ -43,8 +46,15 @@ namespace QuickNavigatePlugin.Controls
         {
         }
 
-        virtual protected void Navigate()
+        private bool GetCanNavigate(TreeNode node)
         {
+            return node != null && node.Text != ITEM_SPACER; 
+        }
+
+        private void Navigate(TreeNode node)
+        {
+            ASCompletion.Context.ASContext.Context.OnSelectOutlineNode(node);
+            Close();
         }
 
         #region Event Handlers
@@ -58,7 +68,8 @@ namespace QuickNavigatePlugin.Controls
                     break;
                 case Keys.Enter:
                     e.Handled = true;
-                    Navigate();
+                    TreeNode node = tree.SelectedNode;
+                    if (GetCanNavigate(node)) Navigate(node);
                     break;
             }
         }
@@ -70,7 +81,8 @@ namespace QuickNavigatePlugin.Controls
 
         protected void Tree_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
         {
-            Navigate();
+            TreeNode node = e.Node;
+            if (GetCanNavigate(node)) Navigate(node);
         }
 
         protected void Input_KeyDown(object sender, KeyEventArgs e)
@@ -121,12 +133,12 @@ namespace QuickNavigatePlugin.Controls
         {
             if ((e.State & TreeNodeStates.Selected) > 0)
             {
-                e.Graphics.FillRectangle(selectedNodeBrush, e.Bounds);
+                e.Graphics.FillRectangle(SelectedNodeBrush, e.Bounds);
                 e.Graphics.DrawString(e.Node.Text, tree.Font, Brushes.White, e.Bounds.Left, e.Bounds.Top, StringFormat.GenericDefault);
             }
             else
             {
-                e.Graphics.FillRectangle(defaultNodeBrush, e.Bounds);
+                e.Graphics.FillRectangle(DefaultNodeBrush, e.Bounds);
                 e.Graphics.DrawString(e.Node.Text, tree.Font, Brushes.Black, e.Bounds.Left, e.Bounds.Top, StringFormat.GenericDefault);
             }
         }

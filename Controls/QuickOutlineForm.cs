@@ -16,7 +16,7 @@ namespace QuickNavigatePlugin
             Init(tree);
         }
 
-        protected override void InitTree()
+        protected override void InitBasics()
         {
             ImageList treeIcons = new ImageList();
             treeIcons.TransparentColor = Color.Transparent;
@@ -68,8 +68,7 @@ namespace QuickNavigatePlugin
             foreach (ClassModel classModel in model.Classes)
             {
                 int imageNum = PluginUI.GetIcon(classModel.Flags, classModel.Access);
-                TreeNode node = new TreeNode(classModel.Name, imageNum, imageNum);
-                node.Tag = "class";
+                TreeNode node = new TreeNode(classModel.Name, imageNum, imageNum) { Tag = "class" };
                 tree.Nodes.Add(node);
                 AddMembers(node.Nodes, classModel.Members);
                 node.Expand();
@@ -95,13 +94,6 @@ namespace QuickNavigatePlugin
                 nodes.Add(node);
                 if (tree.SelectedNode == null) tree.SelectedNode = node;
             }
-        }
-
-        protected override void Navigate()
-        {
-            if (tree.SelectedNode == null) return;
-            ASContext.Context.OnSelectOutlineNode(tree.SelectedNode);
-            Close();
         }
 
         #region Event Handlers

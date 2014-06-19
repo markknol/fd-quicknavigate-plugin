@@ -13,16 +13,6 @@ namespace QuickNavigatePlugin
             return false;
         }
 
-        public static List<string> GetMatchedItems(List<string> source, string searchText, string pathSeparator, int limit) 
-        {
-            return GetMatchedItems(source, searchText, pathSeparator, limit, false);
-        }
-
-        public static List<string> GetMatchedItems(List<string> source, string searchText, string pathSeparator, int limit, bool wholeWord)
-        {
-            return GetMatchedItems(source, searchText, pathSeparator, limit, false, false);
-        }
-
         public static List<string> GetMatchedItems(List<string> source, string searchText, string pathSeparator, int limit, bool wholeWord, bool matchCase)
         {
             List<string> matchedItems = new List<string>();
@@ -40,11 +30,6 @@ namespace QuickNavigatePlugin
             return matchedItems;
         }
 
-        private static bool SimpleSearchMatch(string item, string search)
-        {
-            return SimpleSearchMatch(item, search, false, false);
-        }
-
         private static bool SimpleSearchMatch(string item, string search, bool wholeWord, bool matchCase)
         {
             if (!matchCase)
@@ -52,13 +37,7 @@ namespace QuickNavigatePlugin
                 item = item.ToLower();
                 search = search.ToLower();
             }
-            if (!wholeWord) return item.IndexOf(search) != -1;
-            return item.StartsWith(search);
-        }
-
-        private static bool AdvancedSearchMatch(string item, string searchText)
-        {
-            return AdvancedSearchMatch(item, searchText, false);
+            return wholeWord ? item.StartsWith(search) : item.IndexOf(search) != -1;
         }
 
         private static bool AdvancedSearchMatch(string item, string searchText, bool matchCase)
@@ -84,11 +63,6 @@ namespace QuickNavigatePlugin
                 partNum++;
             }
             return si == sl;
-        }
-
-        private static List<string> GetParts(string item)
-        {
-            return GetParts(item, false);
         }
 
         private static List<string> GetParts(string item, bool matchCase)
