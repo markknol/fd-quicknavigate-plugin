@@ -14,7 +14,7 @@ namespace QuickNavigatePlugin
         private const string ITEM_SPACER = "-----------------";
         private readonly List<string> projectTypes = new List<string>();
         private readonly List<string> openedTypes = new List<string>();
-        private readonly Dictionary<string, ClassModel> dictionary = new Dictionary<string, ClassModel>();
+        private readonly Dictionary<string, ClassModel> qualifiedNameToClassModel = new Dictionary<string, ClassModel>();
 
         public OpenTypeForm(Settings settings) : base(settings)
         {
@@ -29,7 +29,7 @@ namespace QuickNavigatePlugin
         {
             projectTypes.Clear();
             openedTypes.Clear();
-            dictionary.Clear();
+            qualifiedNameToClassModel.Clear();
             IASContext context = ASContext.GetLanguageContext(PluginBase.CurrentProject.Language);
             if (context == null) return;
             foreach (PathModel path in context.Classpath) path.ForeachFile(FileModelDelegate);
@@ -40,10 +40,10 @@ namespace QuickNavigatePlugin
             foreach (ClassModel classModel in model.Classes)
             {
                 string name = classModel.QualifiedName;
-                if (name.Contains("<") || dictionary.ContainsKey(name)) continue;
+                if (name.Contains("<") || qualifiedNameToClassModel.ContainsKey(name)) continue;
                 if (SearchUtil.IsFileOpened(classModel.InFile.FileName)) openedTypes.Add(name);
                 else projectTypes.Add(name);
-                dictionary.Add(name, classModel);
+                qualifiedNameToClassModel.Add(name, classModel);
             }
             return true;
         }
@@ -70,7 +70,7 @@ namespace QuickNavigatePlugin
             if (tree.SelectedNode == null) return;
             string selectedItem = tree.SelectedNode.Text;
             if (selectedItem == ITEM_SPACER) return;
-            ClassModel classModel = dictionary[selectedItem];
+            ClassModel classModel = qualifiedNameToClassModel[selectedItem];
             FileModel model = ModelsExplorer.Instance.OpenFile(classModel.InFile.FileName);
             if (model != null)
             {
