@@ -39,11 +39,11 @@ namespace QuickNavigatePlugin
         {
             foreach (ClassModel classModel in model.Classes)
             {
-                string qualifiedName = classModel.QualifiedName;
-                if (dictionary.ContainsKey(qualifiedName)) continue;
-                if (SearchUtil.IsFileOpened(classModel.InFile.FileName)) openedTypes.Add(qualifiedName);
-                else projectTypes.Add(qualifiedName);
-                dictionary.Add(qualifiedName, classModel);
+                string name = classModel.QualifiedName;
+                if (name.Contains("<") || dictionary.ContainsKey(name)) continue;
+                if (SearchUtil.IsFileOpened(classModel.InFile.FileName)) openedTypes.Add(name);
+                else projectTypes.Add(name);
+                dictionary.Add(name, classModel);
             }
             return true;
         }
