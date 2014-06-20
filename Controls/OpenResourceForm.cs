@@ -31,21 +31,21 @@ namespace QuickNavigatePlugin
 
         protected override void FillTree()
         {
-            List<string> matchedItems;
+            List<string> matches;
             string searchText = input.Text.Trim();
-            if (string.IsNullOrEmpty(searchText)) matchedItems = openedFiles;
+            if (string.IsNullOrEmpty(searchText)) matches = openedFiles;
             else 
             {
                 bool wholeWord = settings.ResourceFormWholeWord;
                 bool matchCase = settings.ResourceFormMatchCase;
-                matchedItems = SearchUtil.GetMatchedItems(openedFiles, searchText, "\\", 0, wholeWord, matchCase);
-                if (matchedItems.Capacity > 0) matchedItems.Add(ITEM_SPACER);
-                matchedItems.AddRange(SearchUtil.GetMatchedItems(projectFiles, searchText, "\\", MAX_ITEMS, wholeWord, matchCase));
+                matches = SearchUtil.Matches(openedFiles, searchText, "\\", 0, wholeWord, matchCase);
+                if (matches.Capacity > 0) matches.Add(ITEM_SPACER);
+                matches.AddRange(SearchUtil.Matches(projectFiles, searchText, "\\", MAX_ITEMS, wholeWord, matchCase));
             }
-            foreach (string item in matchedItems)
+            foreach (string text in matches)
             {
-                TreeNode node = new TreeNode(item);
-                if (item != ITEM_SPACER) node.Tag = "class";
+                TreeNode node = new TreeNode(text);
+                if (text != ITEM_SPACER) node.Tag = "class";
                 tree.Nodes.Add(node);
             }
             if (tree.Nodes.Count > 0) tree.SelectedNode = tree.Nodes[0];

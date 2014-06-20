@@ -30,18 +30,18 @@ namespace QuickNavigatePlugin
 
         protected override void FillTree()
         {
-            List<string> matchedItems;
+            List<string> matches;
             string searchText = input.Text.Trim();
-            if (string.IsNullOrEmpty(searchText)) matchedItems = openedTypes;
+            if (string.IsNullOrEmpty(searchText)) matches = openedTypes;
             else
             {
                 bool wholeWord = settings.TypeFormWholeWord;
                 bool matchCase = settings.TypeFormMatchCase;
-                matchedItems = SearchUtil.GetMatchedItems(openedTypes, searchText, ".", 0, wholeWord, matchCase);
-                if (matchedItems.Capacity > 0) matchedItems.Add(ITEM_SPACER);
-                matchedItems.AddRange(SearchUtil.GetMatchedItems(projectTypes, searchText, ".", MAX_ITEMS, wholeWord, matchCase));
+                matches = SearchUtil.Matches(openedTypes, searchText, ".", 0, wholeWord, matchCase);
+                if (matches.Capacity > 0) matches.Add(ITEM_SPACER);
+                matches.AddRange(SearchUtil.Matches(projectTypes, searchText, ".", MAX_ITEMS, wholeWord, matchCase));
             }
-            foreach (string text in matchedItems)
+            foreach (string text in matches)
             {
                 TreeNode node = new TreeNode(text);
                 if (text != ITEM_SPACER) node.Tag = "class";

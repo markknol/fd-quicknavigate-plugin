@@ -13,7 +13,7 @@ namespace QuickNavigatePlugin
             return false;
         }
 
-        public static List<string> GetMatchedItems(List<string> source, string searchText, string pathSeparator, int limit, bool wholeWord, bool matchCase)
+        public static List<string> Matches(List<string> source, string searchText, string pathSeparator, int limit, bool wholeWord, bool matchCase)
         {
             List<string> matchedItems = new List<string>();
             int i = 0;
