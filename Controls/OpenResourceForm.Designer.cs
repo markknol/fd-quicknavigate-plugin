@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.input = new System.Windows.Forms.TextBox();
-            this.listBox = new System.Windows.Forms.ListBox();
+            this.tree = new System.Windows.Forms.TreeView();
             this.refreshButton = new System.Windows.Forms.Button();
             this.worker = new System.ComponentModel.BackgroundWorker();
             this.messageLabel = new System.Windows.Forms.Label();
@@ -37,35 +37,37 @@
             // 
             // input
             // 
-            this.input.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.input.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.input.BackColor = System.Drawing.SystemColors.Control;
             this.input.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
             this.input.Location = new System.Drawing.Point(12, 26);
             this.input.Name = "input";
-            this.input.Size = new System.Drawing.Size(338, 20);
+            this.input.Size = new System.Drawing.Size(335, 20);
             this.input.TabIndex = 1;
-            this.input.TextChanged += new System.EventHandler(this.TextBox_TextChanged);
-            this.input.KeyDown += new System.Windows.Forms.KeyEventHandler(this.TextBox_KeyDown);
+            this.input.TextChanged += Input_TextChanged;
+            this.input.KeyDown += Input_KeyDown;
             // 
-            // listBox
+            // tree
             // 
-            this.listBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.tree.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.listBox.BackColor = System.Drawing.SystemColors.Control;
-            this.listBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.listBox.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
-            this.listBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.listBox.FormattingEnabled = true;
-            this.listBox.ItemHeight = 16;
-            this.listBox.Location = new System.Drawing.Point(12, 53);
-            this.listBox.Name = "listBox";
-            this.listBox.Size = new System.Drawing.Size(365, 194);
-            this.listBox.TabIndex = 2;
-            this.listBox.DrawItem += new System.Windows.Forms.DrawItemEventHandler(this.ListBox_DrawItem);
-            this.listBox.DoubleClick += new System.EventHandler(this.ListBox_DoubleClick);
-            this.listBox.Resize += new System.EventHandler(this.ListBox_Resize);
+            this.tree.BackColor = System.Drawing.SystemColors.Control;
+            this.tree.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.tree.DrawMode = System.Windows.Forms.TreeViewDrawMode.OwnerDrawText;
+            this.tree.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.tree.HideSelection = false;
+            this.tree.ItemHeight = 16;
+            this.tree.Location = new System.Drawing.Point(12, 53);
+            this.tree.Name = "tree";
+            this.tree.ShowLines = false;
+            this.tree.ShowPlusMinus = false;
+            this.tree.ShowRootLines = false;
+            this.tree.Size = new System.Drawing.Size(365, 194);
+            this.tree.TabIndex = 2;
+            this.tree.NodeMouseDoubleClick += Tree_NodeMouseDoubleClick;
+            this.tree.DrawNode += Tree_DrawNode;
             // 
             // refreshButton
             // 
@@ -74,7 +76,7 @@
             this.refreshButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.refreshButton.Location = new System.Drawing.Point(356, 26);
             this.refreshButton.Name = "refreshButton";
-            this.refreshButton.Size = new System.Drawing.Size(22, 22);
+            this.refreshButton.Size = new System.Drawing.Size(20, 20);
             this.refreshButton.TabIndex = 3;
             this.refreshButton.UseVisualStyleBackColor = true;
             this.refreshButton.Click += new System.EventHandler(this.RefreshButton_Click);
@@ -100,7 +102,7 @@
             this.ClientSize = new System.Drawing.Size(389, 255);
             this.Controls.Add(this.messageLabel);
             this.Controls.Add(this.refreshButton);
-            this.Controls.Add(this.listBox);
+            this.Controls.Add(this.tree);
             this.Controls.Add(this.input);
             this.KeyPreview = true;
             this.MaximizeBox = false;
@@ -111,8 +113,8 @@
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Open Resource";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OpenResourceForm_FormClosing);
-            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.OpenResourceForm_KeyDown);
+            this.FormClosing += Form_FormClosing;
+            this.KeyDown += Form_KeyDown;
             this.ResumeLayout(false);
             this.PerformLayout();
         }
@@ -120,7 +122,7 @@
         #endregion
 
         private System.Windows.Forms.TextBox input;
-        private System.Windows.Forms.ListBox listBox;
+        private System.Windows.Forms.TreeView tree;
         private System.Windows.Forms.Button refreshButton;
         private System.ComponentModel.BackgroundWorker worker;
         private System.Windows.Forms.Label messageLabel;

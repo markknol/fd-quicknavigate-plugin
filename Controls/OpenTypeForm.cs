@@ -3,6 +3,7 @@ using ASCompletion.Model;
 using PluginCore;
 using QuickNavigatePlugin.Controls;
 using System.Collections.Generic;
+using System.IO;
 using System.Windows.Forms;
 
 namespace QuickNavigatePlugin
@@ -11,6 +12,7 @@ namespace QuickNavigatePlugin
     {
         private readonly List<string> projectTypes = new List<string>();
         private readonly List<string> openedTypes = new List<string>();
+        private readonly Dictionary<string, FileModel> name2model = new Dictionary<string, FileModel>();
 
         public OpenTypeForm(Settings settings) : base(settings)
         {
@@ -21,23 +23,9 @@ namespace QuickNavigatePlugin
 
         protected override void InitBasics()
         {
-            projectTypes.Clear();
-            openedTypes.Clear();
             IASContext context = ASContext.GetLanguageContext(PluginBase.CurrentProject.Language);
             if (context == null) return;
             foreach (PathModel path in context.Classpath) path.ForeachFile(FileModelDelegate);
-        }
-
-        private bool FileModelDelegate(FileModel model)
-        {
-            foreach (ClassModel classModel in model.Classes)
-            {
-                string name = classModel.QualifiedName;
-                if (name.Contains("<") || openedTypes.Contains(name) || projectTypes.Contains(name)) continue;
-                if (SearchUtil.IsFileOpened(classModel.InFile.FileName)) openedTypes.Add(name);
-                else projectTypes.Add(name);
-            }
-            return true;
         }
 
         protected override void FillTree()
@@ -53,14 +41,42 @@ namespace QuickNavigatePlugin
                 if (matchedItems.Capacity > 0) matchedItems.Add(ITEM_SPACER);
                 matchedItems.AddRange(SearchUtil.GetMatchedItems(projectTypes, searchText, ".", MAX_ITEMS, wholeWord, matchCase));
             }
-            foreach (string text in matchedItems) tree.Nodes.Add(new TreeNode(text) { Tag = "import" });
+            foreach (string text in matchedItems)
+            {
+                TreeNode node = new TreeNode(text);
+                if (text != ITEM_SPACER) node.Tag = "class";
+                tree.Nodes.Add(node);
+            }
             if (tree.Nodes.Count > 0) tree.SelectedNode = tree.Nodes[0];
         }
 
+        protected override void Navigate(TreeNode node)
+        {
+            string file = name2model[node.Text].FileName;
+            PluginBase.MainForm.OpenEditableDocument(file);
+            base.Navigate(new TreeNode(Path.GetFileNameWithoutExtension(file)) { Tag = node.Tag });
+        }
+
+        private bool FileModelDelegate(FileModel model)
+        {
+            foreach (ClassModel classModel in model.Classes)
+            {
+                string name = classModel.QualifiedName;
+                if (name.Contains("<") || openedTypes.Contains(name) || projectTypes.Contains(name)) continue;
+                if (SearchUtil.IsFileOpened(classModel.InFile.FileName)) openedTypes.Add(name);
+                else projectTypes.Add(name);
+                name2model.Add(name, model);
+            }
+            return true;
+        }
+        
         #region Event Handlers
 
         protected override void Form_FormClosing(object sender, FormClosingEventArgs e)
         {
+            projectTypes.Clear();
+            openedTypes.Clear();
+            name2model.Clear();
             settings.TypeFormSize = Size;
         }
 

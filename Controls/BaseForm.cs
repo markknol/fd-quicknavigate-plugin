@@ -37,13 +37,19 @@ namespace QuickNavigatePlugin.Controls
             FillTree();
             tree.EndUpdate();
         }
-        
-        virtual protected void InitBasics()
+
+        protected virtual void InitBasics()
         {
         }
 
-        virtual protected void FillTree()
+        protected virtual void FillTree()
         {
+        }
+
+        protected virtual void Navigate(TreeNode node)
+        {
+            ASCompletion.Context.ASContext.Context.OnSelectOutlineNode(node);
+            Close();
         }
 
         private bool GetCanNavigate(TreeNode node)
@@ -51,33 +57,7 @@ namespace QuickNavigatePlugin.Controls
             return node != null && node.Text != ITEM_SPACER; 
         }
 
-        private void Navigate(TreeNode node)
-        {
-            ASCompletion.Context.ASContext.Context.OnSelectOutlineNode(node);
-            Close();
-        }
-
         #region Event Handlers
-
-        protected void Form_KeyDown(object sender, KeyEventArgs e)
-        {
-            switch (e.KeyCode)
-            {
-                case Keys.Escape:
-                    Close();
-                    break;
-                case Keys.Enter:
-                    e.Handled = true;
-                    TreeNode node = tree.SelectedNode;
-                    if (GetCanNavigate(node)) Navigate(node);
-                    break;
-            }
-        }
-
-        protected void Input_TextChanged(object sender, EventArgs e)
-        {
-            RefreshTree();
-        }
 
         protected void Tree_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
         {
@@ -143,7 +123,27 @@ namespace QuickNavigatePlugin.Controls
             }
         }
 
-        virtual protected void Form_FormClosing(object sender, FormClosingEventArgs e)
+        protected virtual void Input_TextChanged(object sender, EventArgs e)
+        {
+            RefreshTree();
+        }
+
+        protected virtual void Form_KeyDown(object sender, KeyEventArgs e)
+        {
+            switch (e.KeyCode)
+            {
+                case Keys.Escape:
+                    Close();
+                    break;
+                case Keys.Enter:
+                    e.Handled = true;
+                    TreeNode node = tree.SelectedNode;
+                    if (GetCanNavigate(node)) Navigate(node);
+                    break;
+            }
+        }
+
+        protected virtual void Form_FormClosing(object sender, FormClosingEventArgs e)
         {
         }
 
