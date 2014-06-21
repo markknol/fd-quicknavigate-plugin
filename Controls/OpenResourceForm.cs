@@ -79,6 +79,7 @@ namespace QuickNavigatePlugin
 
         private bool IsFileHidden(string file)
         {
+            //TODO slavara: move to settings
             string path = Path.GetDirectoryName(file);
             string name = Path.GetFileName(file);
             return path.Contains(".svn") || path.Contains(".cvs") || path.Contains(".git") || name.Substring(0, 1) == ".";
