@@ -74,9 +74,6 @@ namespace QuickNavigatePlugin
 
         protected override void Form_FormClosing(object sender, FormClosingEventArgs e)
         {
-            projectTypes.Clear();
-            openedTypes.Clear();
-            name2model.Clear();
             settings.TypeFormSize = Size;
         }
 

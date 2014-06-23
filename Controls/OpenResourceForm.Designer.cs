@@ -76,7 +76,7 @@
             this.refreshButton.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.refreshButton.Location = new System.Drawing.Point(356, 26);
             this.refreshButton.Name = "refreshButton";
-            this.refreshButton.Size = new System.Drawing.Size(20, 20);
+            this.refreshButton.Size = new System.Drawing.Size(18, 18);
             this.refreshButton.TabIndex = 3;
             this.refreshButton.UseVisualStyleBackColor = true;
             this.refreshButton.Click += new System.EventHandler(this.RefreshButton_Click);

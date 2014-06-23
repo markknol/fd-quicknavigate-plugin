@@ -181,10 +181,14 @@ namespace QuickNavigatePlugin
             ObjectSerializer.Serialize(settingFilename, settings);
         }
 
+        #endregion
+
+        #region Event Handlers
+
         private void ShowResourceForm(object sender, EventArgs e)
-	    {
+        {
             if (PluginBase.CurrentProject != null) new OpenResourceForm(settings).ShowDialog();
-	    }
+        }
 
         private void ShowTypeForm(object sender, EventArgs e)
         {
@@ -196,6 +200,6 @@ namespace QuickNavigatePlugin
             if (PluginBase.CurrentProject != null) new QuickOutlineForm(settings).ShowDialog();
         }
 
-		#endregion
-	}
+        #endregion
+    }
 }
