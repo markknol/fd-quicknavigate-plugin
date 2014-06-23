@@ -1,11 +1,11 @@
+using PluginCore;
+using PluginCore.Helpers;
+using PluginCore.Managers;
+using PluginCore.Utilities;
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Windows.Forms;
-using System.ComponentModel;
-using PluginCore.Utilities;
-using PluginCore.Managers;
-using PluginCore.Helpers;
-using PluginCore;
 
 namespace QuickNavigatePlugin
 {
@@ -181,31 +181,21 @@ namespace QuickNavigatePlugin
             ObjectSerializer.Serialize(settingFilename, settings);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
         private void ShowResourceForm(object sender, EventArgs e)
 	    {
             if (PluginBase.CurrentProject != null) new OpenResourceForm(settings).ShowDialog();
 	    }
 
-        /// <summary>
-        /// 
-        /// </summary>
         private void ShowTypeForm(object sender, EventArgs e)
         {
             if (PluginBase.CurrentProject != null) new OpenTypeForm(settings).ShowDialog();
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
         private void ShowOutlineForm(object sender, EventArgs e)
         {
             if (PluginBase.CurrentProject != null) new QuickOutlineForm(settings).ShowDialog();
         }
 
 		#endregion
-
 	}
 }
