@@ -18,7 +18,6 @@ namespace QuickNavigatePlugin
         private const string PLUGIN_AUTH = "Canab";
 	    private const string SETTINGS_FILE = "Settings.fdb";
         private const string PLUGIN_DESC = "QuickNavigate plugin";
-
         private string settingFilename;
         private Settings settings;
 	    private ControlClickManager controlClickManager;
